@@ -206,8 +206,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'feedbackdb',
         'USER': 'root',
-        'PASSWORD': '3624',
-        'HOST': 'localhost',
+        'PASSWORD': '4321',
+        'HOST': 'local@host',
         'PORT': '3306',
     }
 }
