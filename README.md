@@ -1,187 +1,152 @@
-# 🎬 Django Feedback & AI Analysis System
+# Django Feedback & AI Analysis System
 
-A full-stack Django web application for collecting movie feedback, storing it in MySQL, deploying the application to the cloud, and analyzing user feedback using Google's Gemini API.
+A Django-based web application for collecting movie feedback, storing the data in MySQL, deploying the application to the cloud, and performing AI-based analysis of movie reviews using the Google Gemini API.
 
-The project was developed in **three stages**, progressing from a local Django + MySQL application to a cloud-deployed application with AI-powered feedback analysis.
+The project was developed in three stages:
 
----
+1. Local Django application with MySQL
+2. Cloud deployment using Render and Aiven MySQL
+3. AI-powered feedback analysis using the Google Gemini API
 
-## 🚀 Project Overview
+## Project Overview
 
-This project allows users to:
+The application allows users to submit movie feedback through a Django web form.
 
-* Submit movie feedback through a Django web form
-* Store feedback in a MySQL database
-* Deploy the application to the cloud
-* Store production data using a cloud MySQL database
-* Analyze movie reviews using Google's Gemini API
-* Generate:
+The submitted information is stored in a MySQL database. The application can then analyze the movie review using the Gemini API and store the generated analysis in the database.
 
-  * Sentiment
-  * Review summary
-  * Suggestions for the director
-* Store the AI-generated analysis back in the database
+The AI analysis produces:
 
-### Project Architecture
+* Sentiment
+* Review summary
+* Suggestion for the director
+
+The project demonstrates the integration of web development, database management, cloud deployment, and generative AI in a single application.
+
+## Development Stages
+
+### Stage 1: Local Django and MySQL
+
+The initial version was developed and tested locally using Django and MySQL.
+
+Application flow:
 
 ```text
 User
-  │
-  ▼
-Django Web Application
-  │
-  ├── Feedback Form
-  │       │
-  │       ▼
-  │   MySQL Database
-  │
-  └── AI Analysis
-          │
-          ▼
-      Gemini API
-          │
-          ▼
-   Sentiment / Summary / Suggestions
-          │
-          ▼
-      MySQL Database
-```
-
----
-
-# 🏗️ Development Stages
-
-## Stage 1 — Local Django + MySQL
-
-The initial version was developed and tested locally.
-
-```text
-Django
-   │
-   ▼
-Feedback Form
-   │
-   ▼
+  |
+  v
+Django Feedback Form
+  |
+  v
+Django ORM
+  |
+  v
 Local MySQL Database
 ```
 
-The application collects:
+The feedback form collects:
 
 * Name
 * Age
 * Movie
 * Email
-* Movie feedback
+* Feedback
 
-The submitted information is saved into MySQL using Django's ORM.
+The submitted data is validated using Django Forms and stored using Django's ORM.
 
----
+### Stage 2: Cloud Deployment
 
-## Stage 2 — Cloud Deployment
-
-The application was then prepared for cloud deployment.
+The application was then configured for cloud deployment.
 
 ```text
 User
-  │
-  ▼
+  |
+  v
 Django Application
-  │
-  ▼
+  |
+  v
 Render
-  │
-  ▼
-Cloud MySQL Database
+  |
+  v
+Aiven MySQL
 ```
 
-### Cloud Technologies
+Technologies used during deployment:
 
-* **Render** — Application deployment
-* **Aiven MySQL** — Cloud database
-* **Gunicorn** — Production WSGI server
-* **WhiteNoise** — Static file serving
+* Render for application hosting
+* Aiven MySQL for cloud database storage
+* Gunicorn for serving the Django application
+* WhiteNoise for static file handling
 
-Environment variables are used for database credentials and other sensitive configuration instead of hardcoding secrets in the source code.
+Database credentials and other sensitive configuration values are loaded through environment variables rather than being stored directly in the source code.
 
----
+### Stage 3: AI Feedback Analysis
 
-## Stage 3 — Gemini AI Feedback Analysis
+The final stage integrates the Google Gemini API to analyze movie reviews.
 
-The final stage adds AI-powered analysis using Google's Gemini API.
-
-A submitted movie review can be analyzed to generate:
+Application flow:
 
 ```text
-Movie Review
-     │
-     ▼
-Gemini API
-     │
-     ├── Sentiment
-     ├── Summary
-     └── Suggestions
+Stored Movie Feedback
+        |
+        v
+    Gemini API
+        |
+        v
++----------------------+
+| Sentiment            |
+| Summary              |
+| Suggestions          |
++----------------------+
+        |
+        v
+MySQL Database
 ```
 
-The generated results are stored in the same database.
+The application sends the movie name and review to Gemini and requests a JSON response containing the analysis.
 
-### Example
+The generated information is then stored in the corresponding `Feedback` database record.
 
-```json
-{
-  "sentiment": "Positive",
-  "summary": "The reviewer enjoyed the movie and praised its storytelling.",
-  "suggestions": "Consider improving the pacing of the second half."
-}
-```
+## Tech Stack
 
-The database tracks whether a feedback record has already been analyzed using the `is_analyzed` field.
-
----
-
-# 🛠️ Tech Stack
-
-## Backend
+### Backend
 
 * Python
 * Django 5.2
+* Django Forms
 * Django ORM
-* REST-style JSON response handling
 
-## Database
+### Database
 
 * MySQL
 * Aiven MySQL
-* Django migrations
+* Django Migrations
 
-## AI
+### AI
 
 * Google Gemini API
-* `google-genai`
-* Gemini-powered sentiment and feedback analysis
+* Google GenAI Python SDK
 
-## Deployment
+### Deployment
 
 * Render
 * Gunicorn
 * WhiteNoise
 
-## Configuration
+### Configuration
 
 * Python Dotenv
-* Environment variables
+* Environment Variables
 
-## Frontend
+### Frontend
 
 * HTML
 * Django Templates
 
----
-
-# 📁 Project Structure
+## Project Structure
 
 ```text
 feedbacksqlproject/
-│
+|
 ├── feedbacksqlproject/
 │   ├── __init__.py
 │   ├── settings.py
@@ -191,9 +156,9 @@ feedbacksqlproject/
 │
 ├── myapp/
 │   ├── migrations/
+│   │   ├── __init__.py
 │   │   ├── 0001_initial.py
-│   │   ├── 0002_feedback_is_analyzed_feedback_sentiment_and_more.py
-│   │   └── __init__.py
+│   │   └── 0002_feedback_is_analyzed_feedback_sentiment_and_more.py
 │   │
 │   ├── templates/
 │   │   └── myapp/
@@ -213,124 +178,77 @@ feedbacksqlproject/
 └── README.md
 ```
 
----
+## Database Model
 
-# 🗄️ Database Model
+The main database table is represented by the Django `Feedback` model.
 
-The main `Feedback` model contains:
+| Field         | Type         | Purpose                                    |
+| ------------- | ------------ | ------------------------------------------ |
+| `id`          | BigAutoField | Unique feedback identifier                 |
+| `name`        | CharField    | Name of the user                           |
+| `age`         | IntegerField | Age of the user                            |
+| `movie`       | CharField    | Movie name                                 |
+| `email`       | EmailField   | User email                                 |
+| `feed`        | TextField    | Submitted movie feedback                   |
+| `sentiment`   | CharField    | AI-generated sentiment                     |
+| `summary`     | TextField    | AI-generated review summary                |
+| `suggestions` | TextField    | AI-generated suggestion                    |
+| `is_analyzed` | BooleanField | Indicates whether AI analysis is completed |
 
-| Field         | Type         | Description                             |
-| ------------- | ------------ | --------------------------------------- |
-| `id`          | AutoField    | Unique feedback ID                      |
-| `name`        | CharField    | User name                               |
-| `age`         | IntegerField | User age                                |
-| `movie`       | CharField    | Movie name                              |
-| `email`       | EmailField   | User email                              |
-| `feed`        | TextField    | Movie feedback                          |
-| `sentiment`   | CharField    | AI-generated sentiment                  |
-| `summary`     | TextField    | AI-generated review summary             |
-| `suggestions` | TextField    | AI-generated suggestion                 |
-| `is_analyzed` | BooleanField | Tracks whether AI analysis is completed |
+## Application Flow
 
----
+### Feedback Submission
 
-# 🔄 Application Flow
+1. User opens the feedback form.
+2. User enters the movie and feedback details.
+3. Django validates the submitted form.
+4. The feedback is saved to MySQL.
+5. The saved feedback can then be analyzed using the AI endpoint.
 
-### 1. Submit Feedback
+### AI Analysis
 
-The user enters movie information and feedback through the Django form.
+1. The application retrieves the selected feedback record.
+2. The movie name and review are sent to Gemini.
+3. Gemini returns the requested analysis in JSON format.
+4. The application parses the JSON response.
+5. Sentiment, summary, and suggestions are saved to the database.
+6. `is_analyzed` is updated to `True`.
+7. A JSON response is returned to the client.
 
-### 2. Validate Form
+## AI Analysis Endpoint
 
-Django validates the submitted form data.
-
-### 3. Save to Database
-
-The validated feedback is saved using Django's ORM.
-
-### 4. AI Analysis
-
-When AI analysis is requested, the application retrieves the feedback and sends the movie review to Gemini.
-
-### 5. Process AI Response
-
-The application receives a JSON response containing:
-
-* Sentiment
-* Summary
-* Suggestions
-
-### 6. Store Results
-
-The AI-generated information is saved back to the corresponding feedback record.
-
----
-
-# 🔌 API Endpoint
-
-The project exposes an endpoint for triggering AI analysis:
+The application provides an endpoint for analyzing an individual feedback record:
 
 ```text
 POST /analyze/<feedback_id>/
 ```
 
-Example:
+For example:
 
 ```text
 POST /analyze/1/
 ```
 
-The endpoint returns a JSON response.
-
-### Successful Response
+A successful response follows this structure:
 
 ```json
 {
-  "status": "success",
-  "data": {
-    "sentiment": "Positive",
-    "summary": "The reviewer enjoyed the movie.",
-    "suggestions": "Consider improving the pacing."
-  }
+    "status": "success",
+    "data": {
+        "sentiment": "Positive",
+        "summary": "Example review summary",
+        "suggestions": "Example suggestion"
+    }
 }
 ```
 
----
+## Environment Variables
 
-# ⚙️ Local Setup
+Sensitive values are not stored directly in the source code.
 
-## 1. Clone the Repository
+The application uses environment variables for configuration.
 
-```bash
-git clone https://github.com/tarunreddykalluri/tarun_django_project_feedback.git
-cd tarun_django_project_feedback
-```
-
-## 2. Create a Virtual Environment
-
-### Windows
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-### Linux / macOS
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-## 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## 4. Configure Environment Variables
-
-Create a `.env` file in the project root:
+Example local `.env` file:
 
 ```env
 SECRET_KEY=your_secret_key
@@ -343,83 +261,68 @@ DB_HOST=localhost
 DB_PORT=3306
 ```
 
-> Never commit `.env` to GitHub. The project `.gitignore` excludes environment files.
+The `.env` file is excluded from Git using `.gitignore`.
 
-## 5. Apply Migrations
+For cloud deployment, the corresponding environment variables can be configured through the hosting platform.
+
+## Local Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/tarunreddykalluri/tarun_django_project_feedback.git
+cd tarun_django_project_feedback
+```
+
+### 2. Create a Virtual Environment
+
+Windows:
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+Linux or macOS:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the project root and add the required database and Gemini API configuration.
+
+Do not upload this file to GitHub.
+
+### 5. Apply Database Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-## 6. Run Django
+### 6. Run the Application
 
 ```bash
 python manage.py runserver
 ```
 
-Open:
+Open the application at:
 
 ```text
 http://127.0.0.1:8000/feed/
 ```
 
----
+## Project Validation
 
-# ☁️ Deployment
-
-The application can be deployed using:
-
-```text
-GitHub
-   │
-   ▼
-Render
-   │
-   ├── Django
-   ├── Gunicorn
-   └── WhiteNoise
-          │
-          ▼
-      Aiven MySQL
-```
-
-For production deployment, configure the required environment variables in the hosting platform instead of committing credentials to the repository.
-
----
-
-# 🔐 Security
-
-Sensitive information is intentionally kept outside the source code.
-
-The application uses environment variables for:
-
-* Gemini API key
-* Django secret key
-* Database username
-* Database password
-* Database host
-* Database name
-* Database port
-
-Example:
-
-```python
-os.environ.get("GEMINI_API_KEY")
-```
-
-and:
-
-```python
-os.environ.get("DB_PASSWORD", "")
-```
-
-The `.env` file is excluded through `.gitignore`.
-
----
-
-# 🧪 Validation
-
-The project can be checked using Django's built-in system checks:
+Django's built-in system check can be used to verify the project configuration:
 
 ```bash
 python manage.py check
@@ -431,65 +334,51 @@ Expected result:
 System check identified no issues (0 silenced).
 ```
 
-Database migrations can be inspected using:
+Migration status can be checked using:
 
 ```bash
 python manage.py showmigrations
 ```
 
----
+## Security Considerations
 
-# 📌 Key Features
+The project does not store sensitive credentials directly in the source code.
 
-* ✅ Django-based web application
-* ✅ Feedback collection using Django Forms
-* ✅ MySQL database integration
-* ✅ Django ORM
-* ✅ Database migrations
-* ✅ Cloud deployment architecture
-* ✅ Aiven MySQL integration
-* ✅ Render deployment support
-* ✅ Gemini API integration
-* ✅ AI sentiment analysis
-* ✅ AI-generated summaries
-* ✅ AI-generated suggestions
-* ✅ JSON-based AI response handling
-* ✅ Environment-based secret management
-* ✅ Production static-file handling with WhiteNoise
+Environment variables are used for:
 
----
+* Django secret key
+* Gemini API key
+* Database username
+* Database password
+* Database host
+* Database name
+* Database port
 
-# 📈 Future Improvements
+The `.gitignore` file excludes environment files and Python cache files from version control.
 
-Possible future enhancements include:
+## Future Improvements
 
-* User authentication and authorization
-* Pagination for feedback records
-* Admin dashboard for analytics
-* Graphical sentiment statistics
-* Bulk AI analysis
-* Improved AI response validation
-* Background processing for AI analysis
-* REST API using Django REST Framework
-* Automated testing
-* CI/CD pipeline
+Potential improvements include:
 
----
+* Adding user authentication
+* Adding pagination for feedback records
+* Creating an analytics dashboard
+* Displaying sentiment statistics using charts
+* Adding automated tests
+* Adding better validation for AI responses
+* Adding background processing for AI analysis
+* Building a REST API using Django REST Framework
+* Adding CI/CD automation
 
-# 👨‍💻 Author
+## Author
 
 **Tharun Kumar Reddy Kalluri**
 
-B.Tech Graduate | Python | Django | MySQL | AI/ML
+B.Tech Graduate
 
-GitHub:
-https://github.com/tarunreddykalluri
+GitHub: https://github.com/tarunreddykalluri
 
-Portfolio:
-https://www.tarunreddykalluri.com
 
----
+## License
 
-## 📄 License
-
-This project is intended for educational and portfolio purposes.
+This project was developed for educational and portfolio purposes.
