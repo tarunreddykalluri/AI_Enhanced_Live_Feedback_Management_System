@@ -9,10 +9,9 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env
 load_dotenv(BASE_DIR / ".env")
 
-# SECURITY
+# Security
 if "RENDER" in os.environ:
     DEBUG = False
 else:
@@ -81,6 +80,7 @@ DATABASES = {
 }
 
 # Automatically use Render's PostgreSQL DATABASE_URL when available
+
 db_from_env = dj_database_url.config(conn_max_age=600)
 
 if db_from_env:
